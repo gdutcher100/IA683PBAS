@@ -1,0 +1,40 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "4fbf83573c22340d4484f45fe2d700c2",
+    "entities": [
+      {
+        "tableName": "login",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`point_data` TEXT NOT NULL, `image` BLOB NOT NULL, PRIMARY KEY(`point_data`))",
+        "fields": [
+          {
+            "fieldPath": "pointData",
+            "columnName": "point_data",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "image",
+            "columnName": "image",
+            "affinity": "BLOB",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "point_data"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4fbf83573c22340d4484f45fe2d700c2')"
+    ]
+  }
+}

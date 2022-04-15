@@ -5,23 +5,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class SetPasswordActivity extends AppCompatActivity {
@@ -48,11 +48,11 @@ public class SetPasswordActivity extends AppCompatActivity {
         backButton = (Button) findViewById(R.id.back_button);
         nextPointButton = (Button) findViewById(R.id.next_point_button);
         doneButton = (Button) findViewById(R.id.done_button);
-        passwordImage = (ImageView) findViewById(R.id.password_image);
+        passwordImage = (ImageView) findViewById(R.id.login_password_image);
         pointText = (TextView) findViewById(R.id.point_text);
 
-        Bundle extras = getIntent().getExtras();
-        Uri selectedImage = (Uri) extras.getParcelable("imageuri");
+        Bundle bmp = getIntent().getExtras();
+        Uri selectedImage = (Uri) bmp.getParcelable("imageuri");
         System.out.println(selectedImage);
 
         passwordImage.setImageURI(selectedImage);
@@ -108,66 +108,15 @@ public class SetPasswordActivity extends AppCompatActivity {
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // To serialize pointList
-                try
-                {
-                    FileOutputStream fos = new FileOutputStream(getApplicationInfo().dataDir + "/point_data", false);
-                    ObjectOutputStream oos = new ObjectOutputStream(fos);
-                    oos.writeObject(pointList);
-                    fos = new FileOutputStream(getApplicationInfo().dataDir + "/image_uri", false);
-                    oos = new ObjectOutputStream(fos);
-                    oos.writeObject(selectedImage.toString());
-                    oos.close();
-                    fos.close();
-                }
-                catch (IOException ioe)
-                {
-                    ioe.printStackTrace();
-                }
+                serializePointData(selectedImage);
+                saveImage(getApplicationContext(), selectedImage, "img");
 
                 startActivity(doneIntent);
-
-/*                List<PointPair> test = new ArrayList<>();
-                Uri testUri;
-                try
-                {
-                    FileInputStream fis = new FileInputStream(getApplicationInfo().dataDir + "/point_data");
-                    ObjectInputStream ois = new ObjectInputStream(fis);
-
-                    test = (ArrayList) ois.readObject();
-
-                    fis = new FileInputStream(getApplicationInfo().dataDir + "/image_uri");
-                    ois = new ObjectInputStream(fis);
-
-                    String s = (String) ois.readObject();
-                    testUri = Uri.parse(s);
-
-                    ois.close();
-                    fis.close();
-                }
-                catch (IOException ioe)
-                {
-                    ioe.printStackTrace();
-                    return;
-                }
-                catch (ClassNotFoundException c)
-                {
-                    System.out.println("Class not found");
-                    c.printStackTrace();
-                    return;
-                }
-
-                //Verify list data
-                for (PointPair p : test) {
-                    System.out.println(p.toString());
-                }
-
-                System.out.println(testUri);*/
             }
         });
     }
 
-    public void updatePointText() {
+    private void updatePointText() {
         switch (pointCounter) {
             case 0: pointText.setText("Select First Point");
                     break;
@@ -191,6 +140,80 @@ public class SetPasswordActivity extends AppCompatActivity {
 
         if (pointCounter == 5) {
             nextPointButton.setEnabled(false);
+        }
+    }
+
+    public void saveImage(Context context, Uri selectedImage, String name){
+        name = name + ".jpg";
+        Bitmap bmp = null;
+
+        try {
+            bmp = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        FileOutputStream fileOutputStream;
+        try {
+            fileOutputStream = context.openFileOutput(name, Context.MODE_PRIVATE);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+            copyExif(selectedImage.getPath(), name);
+            fileOutputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void serializePointData(Uri selectedImage) {
+        // To serialize pointList
+        try
+        {
+            FileOutputStream fos = new FileOutputStream(getApplicationInfo().dataDir + "/point_data", false);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(pointList);
+            oos.close();
+            fos.close();
+        }
+        catch (IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
+    }
+
+    private static void copyExif(String originalPath, String newPath) throws IOException {
+        String[] attributes = new String[]
+                {
+                        ExifInterface.TAG_DATETIME,
+                        ExifInterface.TAG_DATETIME_DIGITIZED,
+                        ExifInterface.TAG_EXPOSURE_TIME,
+                        ExifInterface.TAG_FLASH,
+                        ExifInterface.TAG_FOCAL_LENGTH,
+                        ExifInterface.TAG_GPS_ALTITUDE,
+                        ExifInterface.TAG_GPS_ALTITUDE_REF,
+                        ExifInterface.TAG_GPS_DATESTAMP,
+                        ExifInterface.TAG_GPS_LATITUDE,
+                        ExifInterface.TAG_GPS_LATITUDE_REF,
+                        ExifInterface.TAG_GPS_LONGITUDE,
+                        ExifInterface.TAG_GPS_LONGITUDE_REF,
+                        ExifInterface.TAG_GPS_PROCESSING_METHOD,
+                        ExifInterface.TAG_GPS_TIMESTAMP,
+                        ExifInterface.TAG_MAKE,
+                        ExifInterface.TAG_MODEL,
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.TAG_SUBSEC_TIME,
+                        ExifInterface.TAG_WHITE_BALANCE
+                };
+
+        ExifInterface oldExif = new ExifInterface(originalPath);
+        ExifInterface newExif = new ExifInterface(newPath);
+
+        if (attributes.length > 0) {
+            for (int i = 0; i < attributes.length; i++) {
+                String value = oldExif.getAttribute(attributes[i]);
+                if (value != null)
+                    newExif.setAttribute(attributes[i], value);
+            }
+            newExif.saveAttributes();
         }
     }
 }

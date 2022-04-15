@@ -8,6 +8,8 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -27,11 +29,19 @@ public class MainActivity extends AppCompatActivity {
         Button setupButton = (Button) findViewById(R.id.setup_button);
         Button loginButton = (Button) findViewById(R.id.login_button);
 
-        Intent intent = new Intent(this, SelectImageActivity.class);
+        Intent setupIntent = new Intent(this, SelectImageActivity.class);
         setupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(intent);
+                startActivity(setupIntent);
+            }
+        });
+
+        Intent doneIntent = new Intent(this, LoginActivity.class);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(doneIntent);
             }
         });
 
