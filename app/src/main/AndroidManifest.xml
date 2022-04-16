@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PBAS">
         <activity
+            android:name=".LoggedInActivity"
+            android:exported="false" />
+        <activity
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
@@ -24,11 +27,11 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:grantUriPermissions="true"
-            android:exported="true">
+            android:exported="true"
+            android:grantUriPermissions="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.content.action.DOCUMENTS_PROVIDER"/>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>

@@ -111,8 +111,11 @@ public class SetPasswordActivity extends AppCompatActivity {
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                serializePointData();
+                serializePointData(pointList);
                 saveImage(getApplicationContext(), selectedImage);
+                for (PointPair p : pointList) {
+                    System.out.println(p.toString());
+                }
 
                 startActivity(doneIntent);
             }
@@ -173,7 +176,7 @@ public class SetPasswordActivity extends AppCompatActivity {
         }
     }
 
-    private void serializePointData() {
+    private void serializePointData(List<PointPair> pointList) {
         // To serialize pointList
         try
         {

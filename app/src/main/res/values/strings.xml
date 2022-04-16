@@ -10,4 +10,7 @@
     <string name="back">Back</string>
     <string name="next_point">Next Point</string>
     <string name="submit">Submit</string>
+    <string name="start">Start</string>
+    <string name="login_success">You have successfully logged in!</string>
+    <string name="click_start_to_begin">Click Start to Begin</string>
 </resources>

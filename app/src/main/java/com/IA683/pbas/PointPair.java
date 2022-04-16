@@ -7,7 +7,8 @@ public class PointPair implements Serializable {
     private int y;
 
     public PointPair() {
-
+        this.x = -1;
+        this.y = -1;
     }
 
     public PointPair(int x, int y) {
