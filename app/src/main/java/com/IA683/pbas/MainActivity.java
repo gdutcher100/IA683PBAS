@@ -71,32 +71,5 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode,
                 permissions,
                 grantResults);
-
-        if (requestCode == VIBRATOR_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(MainActivity.this, "Vibration Permission Granted", Toast.LENGTH_SHORT) .show();
-            }
-            else {
-                Toast.makeText(MainActivity.this, "Vibration Permission Denied", Toast.LENGTH_SHORT) .show();
-            }
-        }
-
-        if (requestCode == READ_EXTERNAL_STORAGE_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(MainActivity.this, "Read External Storage Permission Granted", Toast.LENGTH_SHORT) .show();
-            }
-            else {
-                Toast.makeText(MainActivity.this, "Read External Storage Permission Denied", Toast.LENGTH_SHORT) .show();
-            }
-        }
-
-        if (requestCode == WRITE_EXTERNAL_STORAGE_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(MainActivity.this, "Write External Storage Permission Granted", Toast.LENGTH_SHORT) .show();
-            }
-            else {
-                Toast.makeText(MainActivity.this, "Write External Storage Permission Denied", Toast.LENGTH_SHORT) .show();
-            }
-        }
     }
 }

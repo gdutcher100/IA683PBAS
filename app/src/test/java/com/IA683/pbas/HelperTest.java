@@ -4,8 +4,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-import com.IA683.pbas.Helpers.Helper;
-
 import java.util.ArrayList;
 import java.util.List;
 

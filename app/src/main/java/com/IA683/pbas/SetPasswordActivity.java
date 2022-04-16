@@ -1,12 +1,14 @@
 package com.IA683.pbas;
 
+import static com.IA683.pbas.ExifHelper.copyExif;
+import static com.IA683.pbas.ExifHelper.exifAttributesToString;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.VibrationEffect;
@@ -48,12 +50,13 @@ public class SetPasswordActivity extends AppCompatActivity {
         backButton = (Button) findViewById(R.id.back_button);
         nextPointButton = (Button) findViewById(R.id.next_point_button);
         doneButton = (Button) findViewById(R.id.done_button);
-        passwordImage = (ImageView) findViewById(R.id.login_password_image);
+        passwordImage = (ImageView) findViewById(R.id.set_password_image);
         pointText = (TextView) findViewById(R.id.point_text);
+
+        doneButton.setEnabled(false);
 
         Bundle bmp = getIntent().getExtras();
         Uri selectedImage = (Uri) bmp.getParcelable("imageuri");
-        System.out.println(selectedImage);
 
         passwordImage.setImageURI(selectedImage);
 
@@ -108,8 +111,8 @@ public class SetPasswordActivity extends AppCompatActivity {
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                serializePointData(selectedImage);
-                saveImage(getApplicationContext(), selectedImage, "img");
+                serializePointData();
+                saveImage(getApplicationContext(), selectedImage);
 
                 startActivity(doneIntent);
             }
@@ -130,21 +133,20 @@ public class SetPasswordActivity extends AppCompatActivity {
                     break;
             case 5: pointText.setText("Select Sixth Point");
                     break;
+            case 6: pointText.setText("Maximum Amount of Points Selected");
+                break;
         }
 
-        if (pointCounter < 3) {
-            doneButton.setEnabled(false);
-        } else {
+        if (pointCounter >= 3) {
             doneButton.setEnabled(true);
         }
 
-        if (pointCounter == 5) {
+        if (pointCounter > 5) {
             nextPointButton.setEnabled(false);
         }
     }
 
-    public void saveImage(Context context, Uri selectedImage, String name){
-        name = name + ".jpg";
+    public void saveImage(Context context, Uri selectedImage) {
         Bitmap bmp = null;
 
         try {
@@ -153,18 +155,25 @@ public class SetPasswordActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        FileOutputStream fileOutputStream;
+        //FileOutputStream fileOutputStream;
         try {
-            fileOutputStream = context.openFileOutput(name, Context.MODE_PRIVATE);
-            bmp.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-            copyExif(selectedImage.getPath(), name);
-            fileOutputStream.close();
+            //fileOutputStream = context.openFileOutput(name, Context.MODE_PRIVATE);
+            String path = getApplicationInfo().dataDir + "/img.jpg";
+            FileOutputStream fos = new FileOutputStream(path, false);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            System.out.println(path);
+            copyExif(PathUtil.getPath(context, selectedImage), path);
+            System.out.println("OLD");
+            exifAttributesToString(PathUtil.getPath(context, selectedImage));
+            System.out.println("NEW");
+            exifAttributesToString(path);
+            fos.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void serializePointData(Uri selectedImage) {
+    private void serializePointData() {
         // To serialize pointList
         try
         {
@@ -177,43 +186,6 @@ public class SetPasswordActivity extends AppCompatActivity {
         catch (IOException ioe)
         {
             ioe.printStackTrace();
-        }
-    }
-
-    private static void copyExif(String originalPath, String newPath) throws IOException {
-        String[] attributes = new String[]
-                {
-                        ExifInterface.TAG_DATETIME,
-                        ExifInterface.TAG_DATETIME_DIGITIZED,
-                        ExifInterface.TAG_EXPOSURE_TIME,
-                        ExifInterface.TAG_FLASH,
-                        ExifInterface.TAG_FOCAL_LENGTH,
-                        ExifInterface.TAG_GPS_ALTITUDE,
-                        ExifInterface.TAG_GPS_ALTITUDE_REF,
-                        ExifInterface.TAG_GPS_DATESTAMP,
-                        ExifInterface.TAG_GPS_LATITUDE,
-                        ExifInterface.TAG_GPS_LATITUDE_REF,
-                        ExifInterface.TAG_GPS_LONGITUDE,
-                        ExifInterface.TAG_GPS_LONGITUDE_REF,
-                        ExifInterface.TAG_GPS_PROCESSING_METHOD,
-                        ExifInterface.TAG_GPS_TIMESTAMP,
-                        ExifInterface.TAG_MAKE,
-                        ExifInterface.TAG_MODEL,
-                        ExifInterface.TAG_ORIENTATION,
-                        ExifInterface.TAG_SUBSEC_TIME,
-                        ExifInterface.TAG_WHITE_BALANCE
-                };
-
-        ExifInterface oldExif = new ExifInterface(originalPath);
-        ExifInterface newExif = new ExifInterface(newPath);
-
-        if (attributes.length > 0) {
-            for (int i = 0; i < attributes.length; i++) {
-                String value = oldExif.getAttribute(attributes[i]);
-                if (value != null)
-                    newExif.setAttribute(attributes[i], value);
-            }
-            newExif.saveAttributes();
         }
     }
 }
