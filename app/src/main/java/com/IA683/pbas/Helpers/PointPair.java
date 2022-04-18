@@ -1,4 +1,4 @@
-package com.IA683.pbas;
+package com.IA683.pbas.Helpers;
 
 import java.io.Serializable;
 

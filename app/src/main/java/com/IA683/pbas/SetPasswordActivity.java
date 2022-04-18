@@ -1,7 +1,7 @@
 package com.IA683.pbas;
 
-import static com.IA683.pbas.ExifHelper.copyExif;
-import static com.IA683.pbas.ExifHelper.exifAttributesToString;
+import static com.IA683.pbas.Helpers.ExifHelper.copyExif;
+import static com.IA683.pbas.Helpers.ExifHelper.exifAttributesToString;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +19,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.IA683.pbas.Helpers.PathUtil;
+import com.IA683.pbas.Helpers.PointPair;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

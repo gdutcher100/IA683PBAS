@@ -13,4 +13,5 @@
     <string name="start">Start</string>
     <string name="login_success">You have successfully logged in!</string>
     <string name="click_start_to_begin">Click Start to Begin</string>
+    <string name="enter">Enter</string>
 </resources>
